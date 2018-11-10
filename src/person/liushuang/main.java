@@ -12,11 +12,12 @@ public class main {
 
     String ip = "192.168.1.100";
     int port = 21210;
-    byte[] receMsgs = new byte[1024];
 
+    byte[] receMsgs = new byte[1024];
     DatagramSocket datagramSocket;
     DatagramPacket datagramPacket;
     Socket socket = null;
+    Config config = new Config();
 
     public void main(String[] args){
 //        String ip = "192.168.1.100";
@@ -81,17 +82,15 @@ public class main {
 
     public void read_config(){
         try {
-            DatagramSocket sendSocket = new DatagramSocket();
-
-            datagramSocket = new DatagramSocket();
             InetAddress address = InetAddress.getByName(ip);
             Struct struct = new Struct();
             byte[] buf;
             long[] packet_get_config = {0x1002, 0};
             buf = struct.pack(">HH", packet_get_config);
-
-
             datagramPacket = new DatagramPacket(buf, buf.length, address, port);
+
+
+            datagramSocket = new DatagramSocket();
             datagramSocket.send(datagramPacket);
             byte[] receBuf = new byte[1024];
             DatagramPacket recePacket = new DatagramPacket(receBuf, receBuf.length);
@@ -100,6 +99,7 @@ public class main {
 
             byte[] config_massage = recePacket.getData();
             Config current_config = new Config(config_massage);
+            config = current_config;
 
             String lineEdit_distance_end = p440_config.ps2m(current_config.scan_end);
             System.out.println(lineEdit_distance_end);
@@ -109,4 +109,24 @@ public class main {
         }
     }
 
+    public void write_config(){
+        //config write here
+        int start = 0;
+        int end = 20;
+        long transmit_gain = 12;
+        long base_int_index = 100;
+
+        long[] T1 = p440_config.m2ps(start, end);
+        config.scan_start = T1[0];
+        config.scan_end = T1[1];
+        config.transmit_gain = transmit_gain;
+        config.base_int_index = base_int_index;
+
+        try {
+            InetAddress address = InetAddress.getByName(ip);
+            datagramPacket = new DatagramPacket(config, address, port);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
 }

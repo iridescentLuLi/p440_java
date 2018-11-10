@@ -1,7 +1,7 @@
 package person.liushuang;
 
 class Config{
-    private long[] config_massage;
+    long[] config_massage;
     private String struct_pattren = ">HHIiiHHHHHHBBBBBBBBII";
     Struct struct = new Struct();
     public Config(byte[] frame_bytes){
@@ -11,6 +11,7 @@ class Config{
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     long message_type = config_massage[0];
@@ -34,6 +35,22 @@ class Config{
     long persist_flag = config_massage[18];
     long time_stamp = config_massage[19];
     long status = config_massage[20];
+
+    public Config() {
+
+    }
+}
+
+class to_bytes{
+    int persist_flag = 1;
+    int message_type = 0x1001;
+    int node_id = 100;
+    int scan_resolution = 32;
+    String struct_pattern = ">HHIiiHHHHHHBBBBBBBB";
+    Struct struct = new Struct();
+    byte[] result = struct.pack(struct_pattern, );
+    long a = this.message_type;
+
 }
 
 public class p440_config{
@@ -43,5 +60,24 @@ public class p440_config{
         double result = c * (ps / 1000 - dT0) / 2;
         new java.text.DecimalFormat("#.00").format(result);
         return result+"";
+    }
+
+    static long[] m2ps(int m1, int m2){
+        double c = 0.29979;
+        double dTmin = 1/ (512 * 1.024);
+        double Tbin = 32 * dTmin;
+        int dNBin = 96;
+        int dT0 = 10; //ns related to antenna
+        double T1 = 2 * m1 / c + dT0;
+        double T2 = 2 * m2 / c + dT0;
+
+        double Nbin = (T2 - T1) / Tbin;
+        double Nseg = Math.ceil(Nbin / dNBin);
+        Nbin = dNBin * Nseg;
+
+        T1 = Math.floor(1000*dTmin* Math.floor(T1/dTmin)); // in ps
+        T2 = Math.floor(1000*dTmin* Math.floor(T2/dTmin)); // in ps
+        long[] result = {(long)T1, (long)T2};
+        return result;
     }
 }
