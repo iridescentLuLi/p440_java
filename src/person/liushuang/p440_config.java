@@ -1,57 +1,64 @@
 package person.liushuang;
 
 class Config{
-    long[] config_massage;
-    private String struct_pattren = ">HHIiiHHHHHHBBBBBBBBII";
-    Struct struct = new Struct();
-    public Config(byte[] frame_bytes){
-        try {
-            config_massage = struct.unpack(struct_pattren, frame_bytes);
+//    Object[] config_massage = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    Object[] config_massage;
+    long message_type, message_id, node_id, scan_start, scan_end,
+            scan_resolution, base_int_index, seg1, seg2, seg3,
+            seg4, seg1_int, seg2_int, seg3_int, seg4_int,
+            antenna_mode, transmit_gain, code_channel, persist_flag,
+            time_stamp, status;
 
+
+    public Config(){
+
+    }
+    private String struct_pattren = ">HHIiiHHHHHHBBBBBBBBII";
+    public Config(byte[] frame_bytes) throws JStruct.JStructException {
+//        config_massage = JStruct.unpack(struct_pattren, frame_bytes);
+        config_massage = JStruct.unpack(">HHIiiHHHHHHBBBBBBBBII", frame_bytes);
+        message_type = Long.valueOf(String.valueOf(config_massage[0])).longValue();
+        message_id = Long.valueOf(String.valueOf(config_massage[1])).longValue();
+        node_id = Long.valueOf(String.valueOf(config_massage[2])).longValue();
+        scan_start = Long.valueOf(String.valueOf(config_massage[3])).longValue();
+        scan_end = Long.valueOf(String.valueOf(config_massage[4])).longValue();
+        scan_resolution = Long.valueOf(String.valueOf(config_massage[5])).longValue();
+        base_int_index = Long.valueOf(String.valueOf(config_massage[6])).longValue();
+        seg1 = Long.valueOf(String.valueOf(config_massage[7])).longValue();
+        seg2 = Long.valueOf(String.valueOf(config_massage[8])).longValue();
+        seg3 = Long.valueOf(String.valueOf(config_massage[9])).longValue();
+        seg4 = Long.valueOf(String.valueOf(config_massage[10])).longValue();
+        seg1_int = Long.valueOf(String.valueOf(config_massage[11])).longValue();
+        seg2_int = Long.valueOf(String.valueOf(config_massage[12])).longValue();
+        seg3_int = Long.valueOf(String.valueOf(config_massage[13])).longValue();
+        seg4_int = Long.valueOf(String.valueOf(config_massage[14])).longValue();
+        antenna_mode = Long.valueOf(String.valueOf(config_massage[15])).longValue();
+        transmit_gain = Long.valueOf(String.valueOf(config_massage[16])).longValue();
+        code_channel = Long.valueOf(String.valueOf(config_massage[17])).longValue();
+        persist_flag = Long.valueOf(String.valueOf(config_massage[18])).longValue();
+        time_stamp = Long.valueOf(String.valueOf(config_massage[19])).longValue();
+        status = Long.valueOf(String.valueOf(config_massage[20])).longValue();
+    }
+
+
+
+    public byte[] to_bytes(){
+        int persist_flag = 1;
+        int message_type = 0x1001;
+        int node_id = 100;
+        int scan_resolution = 32;
+        String struct_pattern = ">HHIiiHHHHHHBBBBBBBB";
+        try {
+            byte[] result = JStruct.pack(struct_pattern, this.config_massage);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-    }
-
-    long message_type = config_massage[0];
-    long message_id = config_massage[1];
-    long node_id = config_massage[2];
-    long scan_start = config_massage[3];
-    long scan_end = config_massage[4];
-    long scan_resolution = config_massage[5];
-    long base_int_index = config_massage[6];
-    long seg1 = config_massage[7];
-    long seg2 = config_massage[8];
-    long seg3 = config_massage[9];
-    long seg4 = config_massage[10];
-    long seg1_int = config_massage[11];
-    long seg2_int = config_massage[12];
-    long seg3_int = config_massage[13];
-    long seg4_int = config_massage[14];
-    long antenna_mode = config_massage[15];
-    long transmit_gain = config_massage[16];
-    long code_channel = config_massage[17];
-    long persist_flag = config_massage[18];
-    long time_stamp = config_massage[19];
-    long status = config_massage[20];
-
-    public Config() {
-
+        return new byte[0];
     }
 }
 
-class to_bytes{
-    int persist_flag = 1;
-    int message_type = 0x1001;
-    int node_id = 100;
-    int scan_resolution = 32;
-    String struct_pattern = ">HHIiiHHHHHHBBBBBBBB";
-    Struct struct = new Struct();
-    byte[] result = struct.pack(struct_pattern, );
-    long a = this.message_type;
 
-}
 
 public class p440_config{
     static String ps2m(long ps){
